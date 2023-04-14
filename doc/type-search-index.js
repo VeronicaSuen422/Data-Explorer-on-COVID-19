@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"comp3111.covid","l":"B1TabController"},{"p":"comp3111.covid","l":"B2TabController"},{"p":"comp3111.covid","l":"Controller"},{"p":"comp3111.covid","l":"DataAnalysis"},{"p":"comp3111.covid","l":"MyApplication"},{"p":"comp3111.covid","l":"TaskA1"},{"p":"comp3111.covid","l":"TaskA2"}];updateSearchResults();
