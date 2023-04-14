@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.5" prefWidth="719.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.TaskA1">
+   <children>
+      <MenuButton fx:id="menuBtn" layoutX="350.0" layoutY="75.0" prefHeight="25.0" prefWidth="175.0">
+         <items>
+            <CustomMenuItem mnemonicParsing="false" text="Select From Here">
+               
+            </CustomMenuItem>
+         </items></MenuButton>
+      <DatePicker fx:id="datePicker" layoutX="80.0" layoutY="75.0" onAction="#setDate" prefHeight="25.0" prefWidth="175.0" />
+      <Button fx:id="generateBtn" layoutX="80.0" layoutY="150.0" mnemonicParsing="false" onAction="#createTable" prefHeight="25.0" prefWidth="150.0" text="Create Table" />
+      <Button fx:id="generateBtnBar" layoutX="80.0" layoutY="200.0" mnemonicParsing="false" onAction="#createBarChartT" prefHeight="25.0" prefWidth="150.0" text="Create Bar Chart" />
+      <Label layoutX="80.0" layoutY="50.0" text="Select Date of Interest :" />
+      <Label layoutX="350.0" layoutY="50.0" text="Select Countries of Interest :" />
+   </children>
+</AnchorPane>

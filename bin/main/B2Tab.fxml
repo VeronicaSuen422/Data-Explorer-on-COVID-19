@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CustomMenuItem?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.5" prefWidth="719.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp3111.covid.B2TabController">
+   <children>
+      <MenuButton fx:id="B2MenuButton" layoutX="181.0" layoutY="124.0" prefWidth="150.0">
+         <items>
+            <CustomMenuItem mnemonicParsing="false" text="Select From Here">
+               
+            </CustomMenuItem>
+         </items></MenuButton>
+      <DatePicker fx:id="B2DatePickerStart" layoutX="181.0" layoutY="52.0" onAction="#doPickStartDate" prefHeight="26.0" prefWidth="150.0" />
+      <Button fx:id="B2GenerateButton" layoutX="45.0" layoutY="190.0" mnemonicParsing="false" onAction="#doGenerateChart" prefHeight="26.0" prefWidth="150.0" text="Generate Chart" />
+      <Label layoutX="45.0" layoutY="56.0" prefHeight="17.0" prefWidth="100.0" text="Enter StartDate" />
+      <Label layoutX="45.0" layoutY="129.0" text="Pick Country" />
+      <Button fx:id="B2ButtonConsoleView" layoutX="386.0" layoutY="279.0" mnemonicParsing="false" onAction="#doSwitchToConsole" text="Switch to Console View" />
+      <Button fx:id="B2ButtonChartView" layoutX="547.0" layoutY="279.0" mnemonicParsing="false" onAction="#doSwitchToChart" text="Switch to Chart View" />
+      <Label layoutX="45.0" layoutY="92.0" prefHeight="17.0" prefWidth="100.0" text="Enter EndDate" />
+      <DatePicker fx:id="B2DatePickerEnd" layoutX="181.0" layoutY="88.0" onAction="#doPickEndDate" prefHeight="26.0" prefWidth="150.0" />
+      <Button fx:id="B2StashChart" layoutX="45.0" layoutY="279.0" mnemonicParsing="false" onAction="#doStashChart" prefHeight="26.0" prefWidth="202.0" text="Stash Current Chart Result" />
+      <Button fx:id="B2RetrieveStash" layoutX="45.0" layoutY="247.0" mnemonicParsing="false" onAction="#doRetrieveStash" prefHeight="26.0" prefWidth="202.0" text="Retrieve Stashed Chart Result" />
+      <Label fx:id="B2StashIndicator" layoutX="497.0" layoutY="56.0" prefHeight="17.0" prefWidth="100.0" text="Stashed: False" />
+   </children>
+</AnchorPane>
