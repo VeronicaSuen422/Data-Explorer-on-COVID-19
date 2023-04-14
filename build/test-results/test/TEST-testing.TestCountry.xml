@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="testing.TestCountry" tests="7" skipped="0" failures="0" errors="0" timestamp="2021-11-27T06:50:49" hostname="MacBook.local" time="0.048">
+  <properties/>
+  <testcase name="TestgetPropertyMap" classname="testing.TestCountry" time="0.032"/>
+  <testcase name="TestgetPopulation" classname="testing.TestCountry" time="0.0"/>
+  <testcase name="TestgetCountryName" classname="testing.TestCountry" time="0.0"/>
+  <testcase name="TestgetRate" classname="testing.TestCountry" time="0.001"/>
+  <testcase name="TestgetVaccinatedNum" classname="testing.TestCountry" time="0.001"/>
+  <testcase name="TestupdateVaccinatedNum" classname="testing.TestCountry" time="0.001"/>
+  <testcase name="TestupdatePopulation" classname="testing.TestCountry" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataAnalysis.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">DataAnalysis.java</span></div><h1>DataAnalysis.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import javafx.scene.chart.XYChart;
+import org.apache.commons.csv.*;
+import edu.duke.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.*;
+
+/**
+ * 
+ * Data Explorer on COVID-19
+ * @author &lt;a href=mailto:namkiu@ust.hk&gt;Namkiu Chan&lt;/a&gt;
+ * @version	1.1
+ * 
+ */
+<span class="nc" id="L19">public class DataAnalysis {</span>
+ 
+	public static CSVParser getFileParser(String dataset) {
+<span class="fc" id="L22">	     FileResource fr = new FileResource(&quot;dataset/&quot; + dataset);</span>
+<span class="fc" id="L23">	     return fr.getCSVParser(true);</span>
+		}
+	
+
+	 
+	//This is a helper function that can extract all locations from the csv file.
+	 public static ArrayList&lt;String&gt; getListOfLocations(String dataset) {
+<span class="fc" id="L30">		 ArrayList&lt;String&gt; countryList = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		 for (CSVRecord rec : getFileParser(dataset)) {</span>
+<span class="fc" id="L32">			 String location = rec.get(&quot;location&quot;);</span>
+<span class="fc bfc" id="L33" title="All 4 branches covered.">			 if (!countryList.contains(location) &amp;&amp; !location.equals(&quot;&quot;)){</span>
+<span class="fc" id="L34">				 countryList.add(location);</span>
+			 }
+<span class="fc" id="L36">		 }</span>
+<span class="fc" id="L37">		 return countryList;</span>
+	 }
+	 
+	 //This is a helper function that can extract all locations of the particular date from the csv file.
+	 public static ArrayList&lt;String&gt; getListOfLocationsGivenDate(String dataset, LocalDate dateOfInterest) {
+<span class="fc" id="L42">		 ArrayList&lt;String&gt; countryList = new ArrayList&lt;String&gt;();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		 for (CSVRecord rec : getFileParser(dataset)) {</span>
+<span class="fc" id="L44">			 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="fc" id="L45">			 String date = rec.get(&quot;date&quot;);</span>
+			 LocalDate dateOfRec;
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			 if(!date.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L48">				 dateOfRec = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+			 }
+			 else {
+				 continue;
+			 }
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			 if (dateOfRec.equals(dateOfInterest)) {</span>
+<span class="fc" id="L54">				 String location = rec.get(&quot;location&quot;);</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">				 if (!countryList.contains(location) &amp;&amp; !location.equals(&quot;&quot;)){</span>
+<span class="fc" id="L56">					 countryList.add(location);</span>
+				 }
+			 }
+<span class="fc" id="L59">		 }</span>
+<span class="fc" id="L60">		 return countryList;</span>
+	 }
+	 
+	 public static ArrayList&lt;String&gt; getVaccinationAvailableCountry(String dataset, LocalDate iDate){
+<span class="fc" id="L64">		String pattern = &quot;M/d/yyyy&quot;;</span>
+<span class="fc" id="L65">		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);</span>
+<span class="fc" id="L66">		ArrayList&lt;String&gt; country = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (CSVRecord rec : getFileParser(dataset)) {</span>
+<span class="fc" id="L68">			 LocalDate date = LocalDate.parse(rec.get(&quot;date&quot;), dateFormatter);</span>
+<span class="fc" id="L69">			 String vaccinatedStr = rec.get(&quot;people_fully_vaccinated&quot;);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			 if (vaccinatedStr.equals(&quot;&quot;))</span>
+<span class="fc" id="L71">				 continue;</span>
+<span class="fc" id="L72">			 long fullyVaccinated = Long.parseLong(rec.get(&quot;people_fully_vaccinated&quot;));</span>
+<span class="pc bpc" id="L73" title="3 of 6 branches missed.">			 if((date.isBefore(iDate)||date.isEqual(iDate)) &amp;&amp; fullyVaccinated &gt; 0 ){</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">				 if(!country.contains(rec.get(&quot;location&quot;))){</span>
+<span class="fc" id="L75">					 country.add(rec.get(&quot;location&quot;));</span>
+				 }
+			 }
+<span class="fc" id="L78">		}</span>
+<span class="fc" id="L79">		return country;</span>
+	 }
+	 
+	 public static Map&lt;String, Country&gt; getVaccinationDataBeforeDate(String dataset, LocalDate iDate){
+<span class="fc" id="L83">		 String pattern = &quot;M/d/yyyy&quot;;</span>
+<span class="fc" id="L84">		 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);</span>
+<span class="fc" id="L85">		 Map&lt;String, Country&gt; countries = new TreeMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		 for(CSVRecord rec : getFileParser(dataset)){</span>
+<span class="fc" id="L88">			 LocalDate date = LocalDate.parse(rec.get(&quot;date&quot;), dateFormatter);</span>
+<span class="pc bpc" id="L89" title="1 of 4 branches missed.">			 if (date.isEqual(iDate) || date.isBefore(iDate)) {</span>
+<span class="fc" id="L90">				 String s1 = rec.get(&quot;people_fully_vaccinated&quot;);</span>
+<span class="fc" id="L91">				 String s2 = rec.get(&quot;population&quot;);</span>
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">				 if (!s1.equals(&quot;&quot;) &amp;&amp; !s2.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L93">					 String countryName = rec.get(&quot;location&quot;);</span>
+<span class="fc" id="L94">					 long fullyVaccinated = Long.parseLong(s1);</span>
+<span class="fc" id="L95">					 long population = Long.parseLong(s2);</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">					 if (!countries.containsKey(countryName))</span>
+<span class="fc" id="L97">						 countries.put(countryName, new Country(countryName, population, fullyVaccinated));</span>
+					 else {
+<span class="nc" id="L99">						 Country country = countries.get(countryName);</span>
+<span class="nc" id="L100">						 country.updatePopulation(population);</span>
+<span class="nc" id="L101">						 country.updateVaccinatedNum(fullyVaccinated);</span>
+					 }
+				 }
+			 }
+<span class="fc" id="L105">		 }</span>
+<span class="fc" id="L106">		 return countries;</span>
+	 }
+
+	 public static Date toDate(LocalDate d) {
+<span class="fc" id="L110">		return new GregorianCalendar(d.getYear(), d.getMonthValue(), d.getDayOfMonth()).getTime();</span>
+	 }
+
+	public static Map&lt;String, List&lt;XYChart.Data&lt;Long, Float&gt;&gt;&gt; getVaccinationDataBetweenDate(String dataset, LocalDate iDateFrom, LocalDate iDateTo){
+<span class="fc" id="L114">		String pattern = &quot;M/d/yyyy&quot;;</span>
+<span class="fc" id="L115">		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);</span>
+<span class="fc" id="L116">		Map&lt;String, Country&gt; countries = new TreeMap&lt;&gt;();</span>
+<span class="fc" id="L117">		Map&lt;String, List&lt;XYChart.Data&lt;Long, Float&gt;&gt;&gt; countrySeries = new TreeMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L119" title="All 2 branches covered.">		for(CSVRecord rec : getFileParser(dataset)){</span>
+<span class="fc" id="L120">			LocalDate date = LocalDate.parse(rec.get(&quot;date&quot;), dateFormatter);</span>
+<span class="pc bpc" id="L121" title="5 of 8 branches missed.">			if (date.isEqual(iDateTo) || date.isBefore(iDateTo) &amp;&amp; (date.equals(iDateFrom) || date.isAfter(iDateFrom))) {</span>
+<span class="fc" id="L122">				String s1 = rec.get(&quot;people_fully_vaccinated&quot;);</span>
+<span class="fc" id="L123">				String s2 = rec.get(&quot;population&quot;);</span>
+<span class="pc bpc" id="L124" title="2 of 4 branches missed.">				if (!s1.equals(&quot;&quot;) &amp;&amp; !s2.equals(&quot;&quot;)) {</span>
+<span class="fc" id="L125">					String countryName = rec.get(&quot;location&quot;);</span>
+<span class="fc" id="L126">					long fullyVaccinated = Long.parseLong(s1);</span>
+<span class="fc" id="L127">					long population = Long.parseLong(s2);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">					if (!countries.containsKey(countryName)) {</span>
+<span class="fc" id="L129">						Country newCountry = new Country(countryName, population, fullyVaccinated);</span>
+<span class="fc" id="L130">						countries.put(countryName, newCountry);</span>
+<span class="fc" id="L131">						List&lt;XYChart.Data&lt;Long, Float&gt;&gt; list = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L133">						list.add(new XYChart.Data&lt;&gt;(toDate(date).getTime(), newCountry.getRate()));</span>
+<span class="fc" id="L134">						countrySeries.put(countryName, list);</span>
+<span class="fc" id="L135">					}</span>
+					else {
+<span class="nc" id="L137">						Country country = countries.get(countryName);</span>
+<span class="nc" id="L138">						country.updatePopulation(population);</span>
+<span class="nc" id="L139">						country.updateVaccinatedNum(fullyVaccinated);</span>
+<span class="nc" id="L140">						countrySeries.get(countryName).add(new XYChart.Data&lt;&gt;(toDate(date).getTime(), country.getRate()));</span>
+					}
+				}
+			}
+<span class="fc" id="L144">		}</span>
+<span class="fc" id="L145">		return countrySeries;</span>
+	}
+	 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

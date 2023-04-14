@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskA2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">TaskA2.java</span></div><h1>TaskA2.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import org.apache.commons.csv.CSVRecord;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.util.StringConverter;
+
+<span class="nc" id="L26">public class TaskA2 {</span>
+	private static Controller controller;
+	
+	/**
+	 * This method sets the controller of TaskA1 to the central controller.
+	 * @param c
+	 */
+	public void setController(Controller c) {
+<span class="nc" id="L34">		controller = c;</span>
+<span class="nc" id="L35">	}</span>
+	
+	/**
+	 * The Start Date of Interest to retrieve data from.
+	 */
+	private LocalDate startDate;
+	/**
+	 * The End Date of Interest to retrieve data from.
+	 */
+	private LocalDate endDate;
+	/**
+	 * The list of available countries.
+	 */
+<span class="nc" id="L48">	private ArrayList&lt;String&gt; countries = new ArrayList&lt;String&gt;();</span>
+	/**
+	 * The countries selected by the user.
+	 */
+<span class="nc" id="L52">	private ArrayList&lt;String&gt; selectedCountries = new ArrayList&lt;String&gt;();</span>
+	/**
+	 * The dropdown list to select countries.
+	 */
+	private ArrayList&lt;CustomMenuItem&gt; menuItems;
+	/**
+	 * The line chart to be generated for Task A2.
+	 */
+	private LineChart lineChart;
+	/**
+	 * The date picker to pick the Start Date of Interest.
+	 */
+<span class="nc" id="L64">	@FXML</span>
+	private DatePicker startDatePicker = new DatePicker();
+	/**
+	 * The date picker to pick the End Date of Interest.
+	 */
+<span class="nc" id="L69">	@FXML</span>
+	private DatePicker endDatePicker = new DatePicker();
+	/**
+	 * The &quot;Create Chart&quot; button.
+	 */
+	@FXML
+	private Button generateBtn2;
+	/**
+	 * The dropdown menu to select countries.
+	 */
+	@FXML
+	private MenuButton menuBtn2;
+	/**
+	 * Number of months from Start Date to calculate End Date, for extra feature.
+	 */
+	@FXML
+	private TextField monthsTextField;
+	/**
+	 * Number of days from Start Date to calculate End Date, for extra feature.
+	 */
+	@FXML
+	private TextField daysTextField;
+	/**
+	 * The &quot;Calculate&quot; button, for extra feature.
+	 */
+	@FXML
+	private Button calculateBtn;
+	
+	
+	/**
+	 * This method sets the Start Date of Interest with the date picker.
+	 * @param event This is the event triggered by using the date picker.
+	 */
+	@FXML
+	void setStartDate(ActionEvent event) {
+<span class="nc" id="L104">    	startDate = startDatePicker.getValue();</span>
+<span class="nc bnc" id="L105" title="All 6 branches missed.">    	if((endDate != null) &amp;&amp; ((startDate.isAfter(endDate))||(startDate.equals(endDate)))) {</span>
+<span class="nc" id="L106">    		Alert invalidPeriodAlert = new Alert(Alert.AlertType.ERROR, &quot;The selected period of interest is invalid. Please select an earlier start date and/or a later end date.&quot;);</span>
+<span class="nc" id="L107">			invalidPeriodAlert.showAndWait();</span>
+<span class="nc" id="L108">			return;</span>
+    	}
+<span class="nc" id="L110">    	createCountriesMenu();</span>
+<span class="nc" id="L111">	}</span>
+	
+	/**
+	 * This method sets the End Date of Interest with the date picker.
+	 * @param event This is the event triggered by using the date picker.
+	 */
+	@FXML
+	void setEndDate(ActionEvent event) {
+<span class="nc" id="L119">    	endDate = endDatePicker.getValue();</span>
+<span class="nc bnc" id="L120" title="All 6 branches missed.">    	if((startDate != null) &amp;&amp; ((startDate.isAfter(endDate))||(startDate.equals(endDate)))) {</span>
+<span class="nc" id="L121">    		Alert invalidPeriodAlert = new Alert(Alert.AlertType.ERROR, &quot;The selected period of interest is invalid. Please select an earlier start date and/or a later end date.&quot;);</span>
+<span class="nc" id="L122">			invalidPeriodAlert.showAndWait();</span>
+<span class="nc" id="L123">			return;</span>
+    	}
+<span class="nc" id="L125">	}</span>
+	
+	/**
+	 * This method is triggered by the &quot;Create Chart&quot; button and creates the chart.
+	 * @param event This is the event triggered by the &quot;Create Chart&quot; button.
+	 */
+	@FXML
+	void createChart(ActionEvent event) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">		if(startDate == null) {</span>
+<span class="nc" id="L134">			Alert missingStartAlert = new Alert(Alert.AlertType.ERROR, &quot;No start date is selected. Please select a start date.&quot;);</span>
+<span class="nc" id="L135">			missingStartAlert.showAndWait();</span>
+<span class="nc" id="L136">			return;</span>
+		}
+<span class="nc bnc" id="L138" title="All 2 branches missed.">		else if(endDate == null) {</span>
+<span class="nc" id="L139">			Alert missingEndAlert = new Alert(Alert.AlertType.ERROR, &quot;No end date is selected. Please select an end date.&quot;);</span>
+<span class="nc" id="L140">			missingEndAlert.showAndWait();</span>
+<span class="nc" id="L141">			return;</span>
+		}
+<span class="nc bnc" id="L143" title="All 4 branches missed.">		else if(startDate.isAfter(endDate) || startDate.equals(endDate)) {</span>
+<span class="nc" id="L144">			Alert invalidPeriodAlert = new Alert(Alert.AlertType.ERROR, &quot;The selected period of interest is invalid. Please select an earlier start date and/or a later end date.&quot;);</span>
+<span class="nc" id="L145">			invalidPeriodAlert.showAndWait();</span>
+<span class="nc" id="L146">			return;</span>
+		}
+<span class="nc bnc" id="L148" title="All 2 branches missed.">		if(selectedCountries.isEmpty()) {</span>
+<span class="nc" id="L149">    		Alert missingCountriesAlert = new Alert(Alert.AlertType.ERROR, &quot;No countries selected. Please select countries to query.&quot;);</span>
+<span class="nc" id="L150">    		missingCountriesAlert.showAndWait();</span>
+<span class="nc" id="L151">    		return;</span>
+    	}
+		
+<span class="nc" id="L154">		NumberAxis xAxis = new NumberAxis();</span>
+<span class="nc" id="L155">		xAxis.setLabel(&quot;Date&quot;);</span>
+<span class="nc" id="L156">		xAxis.setAutoRanging(false);</span>
+<span class="nc" id="L157">		xAxis.setLowerBound(startDate.toEpochDay());</span>
+<span class="nc" id="L158">		xAxis.setUpperBound(endDate.toEpochDay());</span>
+<span class="nc" id="L159">		DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern(&quot;MMM d, yyyy&quot;);</span>
+<span class="nc" id="L160">		xAxis.setTickLabelFormatter(new StringConverter&lt;Number&gt;() {</span>
+    		@Override
+            public String toString(Number object) {
+<span class="nc" id="L163">    			var date = LocalDate.ofEpochDay(object.longValue());</span>
+<span class="nc" id="L164">                return date.format(outFormatter).toString();</span>
+            }
+            @Override
+            public Number fromString(String string) {
+<span class="nc" id="L168">                return 0;</span>
+            }
+    	});
+<span class="nc" id="L171">		NumberAxis yAxis = new NumberAxis();</span>
+<span class="nc" id="L172">		yAxis.setLabel(&quot;COVID-19 Cases (per 1M)&quot;);</span>
+<span class="nc" id="L173">		lineChart = new LineChart(xAxis, yAxis);</span>
+<span class="nc" id="L174">		lineChart.setCreateSymbols(false);</span>
+<span class="nc" id="L175">		lineChart.setTitle(&quot;Cumulative Confirmed COVID-19 Cases (per 1M) from &quot;+startDate.format(outFormatter)+&quot; to &quot;+endDate.format(outFormatter));</span>
+		
+<span class="nc bnc" id="L177" title="All 2 branches missed.">		for (var country: selectedCountries) {</span>
+<span class="nc" id="L178">        	var series = createSeries(country);</span>
+<span class="nc" id="L179">        	series.setName(country);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        	if(!series.getData().isEmpty()) { </span>
+<span class="nc" id="L181">        		lineChart.getData().add(series);</span>
+        	} else {
+<span class="nc" id="L183">        		Alert missingCountryDataAlert = new Alert(Alert.AlertType.WARNING, &quot;No data is available for &quot;+country+&quot; during the chosen period. It will be excluded from the chart.&quot;);</span>
+<span class="nc" id="L184">        		missingCountryDataAlert.showAndWait();</span>
+        	}
+<span class="nc" id="L186">        }</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">		if(lineChart.getData().isEmpty()) {</span>
+<span class="nc" id="L188">			Alert missingAllDataAlert = new Alert(Alert.AlertType.ERROR, &quot;No data is available for all the selected countries. Please select another period of interest or other countries to query.&quot;);</span>
+<span class="nc" id="L189">			missingAllDataAlert.showAndWait();</span>
+<span class="nc" id="L190">			return;</span>
+		}
+<span class="nc" id="L192">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L193">        controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L194">        controller.scrollPaneBottom.setContent(lineChart);</span>
+<span class="nc" id="L195">	}</span>
+	
+	/**
+	 * This method creates the list of countries to be selected from in the dropdown menu.
+	 * @param nothing
+	 * @return nothing
+	 */
+	void createCountriesMenu() {
+<span class="nc" id="L203">    	menuBtn2.getItems().clear();</span>
+<span class="nc" id="L204">    	countries = DataAnalysis.getListOfLocations(controller.textfieldDataset.getText());</span>
+<span class="nc" id="L205">    	menuItems = new ArrayList&lt;CustomMenuItem&gt;();</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">    	for (var country: countries) {</span>
+<span class="nc" id="L207">    		var checkBox = new CheckBox(country);</span>
+<span class="nc" id="L208">    		var menuItem = new CustomMenuItem(checkBox);</span>
+<span class="nc" id="L209">    		menuItem.setHideOnClick(false);</span>
+<span class="nc" id="L210">    		menuItem.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+    		    public void handle(ActionEvent t) {
+<span class="nc bnc" id="L212" title="All 2 branches missed.">    		    	if (checkBox.isSelected()) {</span>
+<span class="nc" id="L213">    		    		checkBox.setSelected(false);</span>
+<span class="nc" id="L214">    		    		selectedCountries.remove(country);</span>
+<span class="nc" id="L215">    		    		selectedCountries.remove(country);</span>
+    		    	}
+    		    	else {
+<span class="nc" id="L218">    		    		checkBox.setSelected(true);</span>
+<span class="nc" id="L219">    		    		selectedCountries.add(country);</span>
+    		    	}
+<span class="nc" id="L221">    		    }</span>
+    		});
+<span class="nc" id="L223">    		menuItems.add(menuItem);</span>
+<span class="nc" id="L224">    	}</span>
+<span class="nc" id="L225">    	menuBtn2.getItems().addAll(menuItems.toArray(new CustomMenuItem[0]));</span>
+<span class="nc" id="L226">    }</span>
+	
+	/**
+	  * This method creates a XYChart.Series with data for the input country for the chart.
+	  * @param country The country to retrieve data for in the selected period.
+	  * @return A XYChart.Series containing the country and total number of cases per million.
+	  */
+	public XYChart.Series createSeries(String country) {	
+<span class="nc" id="L234">	 	float CasesPerM = 0;</span>
+<span class="nc" id="L235">	 	var series = new XYChart.Series&lt;&gt;();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">		for (CSVRecord rec : DataAnalysis.getFileParser(controller.textfieldDataset.getText())) {</span>
+<span class="nc" id="L237">			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L238">			LocalDate recDate = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L239" title="All 6 branches missed.">			if ((!recDate.isBefore(startDate)) &amp;&amp; (!recDate.isAfter(endDate)) &amp;&amp; (rec.get(&quot;location&quot;).equals(country))) {</span>
+<span class="nc" id="L240">					String per = rec.get(&quot;total_cases_per_million&quot;);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">					if (!per.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L242">						CasesPerM = Float.parseFloat(per);</span>
+<span class="nc" id="L243">						series.getData().add(new XYChart.Data(recDate.toEpochDay(), CasesPerM));</span>
+					}
+			}
+			
+<span class="nc" id="L247">		}</span>
+<span class="nc" id="L248">		return series;</span>
+	}
+	
+	/**
+	 * This method calculates the End Date of Interest from the Start Date of Interest from input from the Months and Days text fields.
+	 * @param event This is the event triggered by pressing the &quot;Calculate&quot; button.
+	 */
+	@FXML
+	void calculateEndDate(ActionEvent event) {
+<span class="nc bnc" id="L257" title="All 2 branches missed.">		if(startDate == null) {</span>
+<span class="nc" id="L258">			Alert missingStartAlert = new Alert(Alert.AlertType.ERROR, &quot;No start date is selected. Please select a start date.&quot;);</span>
+<span class="nc" id="L259">			missingStartAlert.showAndWait();</span>
+<span class="nc" id="L260">			return;</span>
+		}
+<span class="nc" id="L262">		long months = Long.parseLong(monthsTextField.getText());</span>
+<span class="nc" id="L263">		long days = Long.parseLong(daysTextField.getText());</span>
+<span class="nc" id="L264">		endDate = startDate.plusMonths(months).plusDays(days);</span>
+<span class="nc" id="L265">		endDatePicker.setValue(endDate);</span>
+<span class="nc bnc" id="L266" title="All 4 branches missed.">		if(startDate.equals(endDate) || endDate.isBefore(startDate)) {</span>
+<span class="nc" id="L267">			Alert invalidPeriodAlert = new Alert(Alert.AlertType.ERROR, &quot;The selected period of interest is invalid. Please select an earlier start date and/or a later end date.&quot;);</span>
+<span class="nc" id="L268">			invalidPeriodAlert.showAndWait();</span>
+<span class="nc" id="L269">			return;</span>
+		}
+<span class="nc" id="L271">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

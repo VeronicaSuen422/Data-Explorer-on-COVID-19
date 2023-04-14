@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>B2TabController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">B2TabController.java</span></div><h1>B2TabController.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import org.apache.commons.csv.CSVRecord;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.util.StringConverter;
+/**
+ * 
+ * @author choiivan
+ *
+ */
+<span class="nc" id="L27">public class B2TabController {</span>
+    private Controller controller;
+	
+    private LocalDate startDateOfInterest;
+    private LocalDate endDateOfInterest;
+    private ArrayList&lt;String&gt; countriesList;
+<span class="nc" id="L33">    private ArrayList&lt;String&gt; selectedCountriesList = new ArrayList&lt;String&gt;();</span>
+    private ArrayList&lt;CustomMenuItem&gt; menuItemList;
+    
+    LineChart&lt;Number, Number&gt; B2lineChart;
+    LineChart&lt;Number, Number&gt; B2lineChartStash;
+    
+    /**
+     * This function is to inject the general controller into B2TabController, allowing access of dataset version and the console.
+     */
+    public void injectController(Controller controller) {
+<span class="nc" id="L43">    	this.controller = controller;</span>
+<span class="nc" id="L44">    }</span>
+    
+    /**
+     * This function is to initialize the chart component
+     */
+    @FXML
+    public void initialize() {
+<span class="nc" id="L51">    	B2DatePickerEnd.getEditor().setDisable(true);</span>
+<span class="nc" id="L52">    	B2DatePickerStart.getEditor().setDisable(true);</span>
+<span class="nc" id="L53">    }</span>
+    
+    public void initializeChart() {
+<span class="nc" id="L56">    	NumberAxis yAxis = new NumberAxis();</span>
+<span class="nc" id="L57">    	yAxis.setAutoRanging(true);</span>
+<span class="nc" id="L58">    	yAxis.setLabel(&quot;Confirmed Deaths per 1M&quot;);</span>
+<span class="nc" id="L59">    	NumberAxis xAxis = new NumberAxis();</span>
+<span class="nc" id="L60">    	xAxis.setLabel(&quot;Date&quot;);</span>
+<span class="nc" id="L61">    	xAxis.setTickLabelFormatter(new StringConverter&lt;Number&gt;() {</span>
+    		@Override
+            public String toString(Number object) {
+<span class="nc" id="L64">                return LocalDate.ofEpochDay(object.longValue()).toString();</span>
+            }
+
+            @Override
+            public Number fromString(String string) {
+<span class="nc" id="L69">                return 0;</span>
+            }
+    	});
+<span class="nc" id="L72">    	B2lineChart = new LineChart&lt;Number, Number&gt;(xAxis, yAxis);</span>
+<span class="nc" id="L73">    	B2lineChart.setTitle(&quot;Cumulative Confirmed COVID-19 Deaths (per 1M)&quot;);</span>
+<span class="nc" id="L74">    	B2lineChart.setCreateSymbols(false);</span>
+<span class="nc" id="L75">    }</span>
+
+    @FXML
+    private Button B2ButtonConsoleView;
+
+    @FXML
+    private Button B2ButtonChartView;
+
+    @FXML
+    private DatePicker B2DatePickerEnd;
+
+    @FXML
+    private DatePicker B2DatePickerStart;
+
+    @FXML
+    private Button B2GenerateButton;
+
+    @FXML
+    private MenuButton B2MenuButton;
+    
+    @FXML
+    private Button B2StashChart;
+    
+    @FXML
+    private Button B2RetrieveStash;
+    
+    @FXML
+    private Label B2StashIndicator;
+
+    /**
+     * This function is generating a chart, triggered by clicking the B2GenerateButton.
+     * It will check all the input (i.e. startDate, endDate, countries of interest) are filled probably.
+     * @param event
+     */
+    @FXML
+    void doGenerateChart(ActionEvent event) {
+<span class="nc" id="L111">    	initializeChart();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    	if (this.startDateOfInterest == null) {</span>
+<span class="nc" id="L113">    		controller.textAreaConsole.appendText(&quot;Please Enter The START Date of Interest. \n&quot;);</span>
+<span class="nc" id="L114">    		return;</span>
+    	}
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    	if (this.endDateOfInterest == null) {</span>
+<span class="nc" id="L117">    		controller.textAreaConsole.appendText(&quot;Please Enter The END Date of Interest. \n&quot;);</span>
+<span class="nc" id="L118">    		return;</span>
+    	}
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    	if (!validateInputDate(this.startDateOfInterest, this.endDateOfInterest)) {</span>
+<span class="nc" id="L121">    		controller.textAreaConsole.appendText(&quot;Please make sure the Start day is before End day. \n&quot;);</span>
+<span class="nc" id="L122">    		return;</span>
+    	}
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    	if (selectedCountriesList.size() == 0) {</span>
+<span class="nc" id="L125">    		controller.textAreaConsole.appendText(&quot;Please Select Countries of Interest. \n&quot;);</span>
+<span class="nc" id="L126">    		return;</span>
+    	}
+<span class="nc" id="L128">    	controller.textAreaConsole.appendText(&quot;Querying Data for the following countries: &quot;);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    	for(String a : selectedCountriesList){</span>
+<span class="nc" id="L130">    		controller.textAreaConsole.appendText(a + &quot; &quot;);</span>
+<span class="nc" id="L131">    	}</span>
+    	
+<span class="nc" id="L133">    	controller.textAreaConsole.appendText(&quot;within: &quot; + startDateOfInterest + &quot;, &quot; + endDateOfInterest + &quot;.&quot; +&quot;\n&quot;);</span>
+<span class="nc" id="L134">    	NumberAxis xAxis =(NumberAxis) B2lineChart.getXAxis();</span>
+<span class="nc" id="L135">    	xAxis.setAutoRanging(false);</span>
+<span class="nc" id="L136">    	xAxis.setLowerBound(startDateOfInterest.toEpochDay());</span>
+<span class="nc" id="L137">    	xAxis.setUpperBound(endDateOfInterest.toEpochDay());</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    	for(String location: selectedCountriesList) {</span>
+<span class="nc" id="L139">    		XYChart.Series&lt;Number, Number&gt; seriesLocation = generateSeries(location, startDateOfInterest, endDateOfInterest);</span>
+<span class="nc" id="L140">    		seriesLocation.setName(location);</span>
+<span class="nc" id="L141">    		B2lineChart.getData().add(seriesLocation);</span>
+<span class="nc" id="L142">    	}</span>
+<span class="nc" id="L143">    	controller.scrollPaneBottom.setContent(this.B2lineChart);</span>
+<span class="nc" id="L144">    	controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L145">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L146">    }</span>
+
+    /**
+     * This function is triggered by picking a date in the B2DatePickerEnd.
+     * It will check whether the current combination of startDate and EndDate is valid, then creating a list of countries for the user to choose from.
+     * @param event
+     */
+    @FXML
+    void doPickEndDate(ActionEvent event) {
+<span class="nc" id="L155">    	this.endDateOfInterest = B2DatePickerEnd.getValue();</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">    	if(this.startDateOfInterest != null &amp;&amp; validateInputDate(this.startDateOfInterest, B2DatePickerEnd.getValue())) {</span>
+<span class="nc" id="L157">    		initializeList();</span>
+<span class="nc" id="L158">    		controller.textAreaConsole.appendText(</span>
+    				&quot;You picked the Date from: &quot; + startDateOfInterest + &quot;, to: &quot; + endDateOfInterest + &quot;. &quot; +
+    				&quot;Please pick the targeted countries from the list.  \n&quot;);
+    	}
+    	else {
+<span class="nc" id="L163">    		controller.textAreaConsole.appendText(&quot;Please choose a Ending Date that is after the Starting Date \n&quot;);</span>
+    	}
+<span class="nc" id="L165">    }</span>
+    
+    /**
+     * This function is triggered by picking a date in the B2DatePickerStart.
+     * It will check whether the current combination of startDate and EndDate is valid, then creating a list of countries for the user to choose from.
+     * @param event
+     */
+    @FXML
+    void doPickStartDate(ActionEvent event) {
+<span class="nc" id="L174">    	this.startDateOfInterest = B2DatePickerStart.getValue();</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">    	if(this.endDateOfInterest != null) {</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">    		if(validateInputDate(B2DatePickerStart.getValue(),this.endDateOfInterest)){</span>
+<span class="nc" id="L177">    			initializeList();</span>
+<span class="nc" id="L178">        		controller.textAreaConsole.appendText(</span>
+        				&quot;You picked the Date from: &quot; + startDateOfInterest + &quot;, to: &quot; + endDateOfInterest + &quot;. &quot; +
+        				&quot;Please pick the targeted countries from the list.  \n&quot;);
+    		}
+    		else {
+<span class="nc" id="L183">        		controller.textAreaConsole.appendText(&quot;Please choose a Starting Date that is before the Ending Date \n&quot;);</span>
+        	}
+    	}
+    	else {
+<span class="nc" id="L187">    		controller.textAreaConsole.appendText(&quot;Please choose an Ending Date  \n&quot;);</span>
+    	}
+<span class="nc" id="L189">    }</span>
+
+    /**
+     * This is triggered by clicking the B2ButtonConsoleView.
+     * It will switch to the lower scroll pane into Console View.
+     * @param event
+     */
+    @FXML
+    void doSwitchToConsole(ActionEvent event) {
+<span class="nc" id="L198">    	controller.scrollPaneBottom.setContent(controller.textAreaConsole);</span>
+<span class="nc" id="L199">    }</span>
+    
+    /**
+     * This is triggered by clicking the B2ButtonChartView.
+     * It will switch to the lower scroll pane into Chart View.
+     * @param event
+     */
+    @FXML
+    void doSwitchToChart(ActionEvent event) {
+<span class="nc" id="L208">    	controller.scrollPaneBottom.setContent(this.B2lineChart);</span>
+<span class="nc" id="L209">    }</span>
+    
+    @FXML
+    void doStashChart(ActionEvent event) {
+<span class="nc" id="L213">    	controller.textAreaConsole.appendText(&quot;Stashing the current chart. \n&quot;);</span>
+<span class="nc" id="L214">    	this.B2lineChartStash = this.B2lineChart;</span>
+<span class="nc" id="L215">    	initializeChart();</span>
+<span class="nc" id="L216">    	this.controller.scrollPaneBottom.setContent(B2lineChart);</span>
+<span class="nc" id="L217">    	B2StashIndicator.setText(&quot;Stashed: True&quot;);</span>
+<span class="nc" id="L218">    }</span>
+    
+    @FXML
+    void doRetrieveStash(ActionEvent event) {
+<span class="nc" id="L222">    	B2lineChart = B2lineChartStash;</span>
+<span class="nc" id="L223">    	this.controller.scrollPaneBottom.setContent(B2lineChartStash);</span>
+<span class="nc" id="L224">    	B2StashIndicator.setText(&quot;Stashed: False&quot;);</span>
+<span class="nc" id="L225">    }</span>
+    
+    /**
+     * This is a function that initialize the menu for choosing countries.
+     */
+    private void initializeList() {
+<span class="nc" id="L231">    	B2MenuButton.getItems().clear();</span>
+<span class="nc" id="L232">    	this.countriesList = DataAnalysis.getListOfLocations(controller.textfieldDataset.getText());</span>
+<span class="nc" id="L233">    	this.menuItemList = new ArrayList&lt;CustomMenuItem&gt;();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">    	for (String country: this.countriesList) {</span>
+<span class="nc" id="L235">    		CheckBox checkBox = new CheckBox(country);</span>
+<span class="nc" id="L236">    		CustomMenuItem menuItem = new CustomMenuItem(checkBox);</span>
+<span class="nc" id="L237">    		menuItem.setHideOnClick(false);</span>
+<span class="nc" id="L238">    		menuItem.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+    		    public void handle(ActionEvent t) {
+<span class="nc bnc" id="L240" title="All 2 branches missed.">    		    	if (checkBox.isSelected()) {</span>
+<span class="nc" id="L241">    		    		checkBox.setSelected(false);</span>
+<span class="nc" id="L242">    		    		selectedCountriesList.remove(country);</span>
+<span class="nc" id="L243">    		    		selectedCountriesList.remove(country);</span>
+    		    	}
+    		    	else {
+<span class="nc" id="L246">    		    		checkBox.setSelected(true);</span>
+<span class="nc" id="L247">    		    		selectedCountriesList.add(country);</span>
+    		    	}
+<span class="nc" id="L249">    		    }</span>
+    		});
+<span class="nc" id="L251">    		this.menuItemList.add(menuItem);</span>
+<span class="nc" id="L252">    	}</span>
+<span class="nc" id="L253">    	B2MenuButton.getItems().addAll(this.menuItemList.toArray(new CustomMenuItem[0]));</span>
+<span class="nc" id="L254">    	selectedCountriesList.clear();</span>
+<span class="nc" id="L255">    }</span>
+    
+    /**
+     * This is a function that check whether the startDate is before endDate.
+     * @return boolean indicating whether the input dates are valid.
+     */
+    public boolean validateInputDate(LocalDate start, LocalDate end){
+<span class="nc" id="L262">    	return start.isBefore(end);</span>
+    }
+    
+    /**
+     * This function is used to create a series object for a particular location within the period of interest that will be put into the chart.
+     * @param location This is the parameter for the country name.
+     * @param startDate This is the parameter for the starting date.
+     * @param endDate This is the parameter for the ending date.
+     * @return XYChart.Series&lt;Number, Number&gt; This is a series of data items for a particular location in between the start date and end date.
+     */
+    public XYChart.Series&lt;Number, Number&gt; generateSeries(String location, LocalDate startDate, LocalDate endDate){
+<span class="nc" id="L273">    	XYChart.Series&lt;Number, Number&gt; series = new XYChart.Series&lt;Number, Number&gt;();</span>
+<span class="nc" id="L274">    	float confirmedDeaths1M = 0;</span>
+<span class="nc" id="L275">    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">    	for (CSVRecord rec : DataAnalysis.getFileParser(controller.textfieldDataset.getText())) {</span>
+<span class="nc" id="L277">    		String date = rec.get(&quot;date&quot;);</span>
+<span class="nc" id="L278">    		LocalDate dateOfRec = null;</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">			if (!date.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L280">				dateOfRec = LocalDate.parse(date, formatter);</span>
+			}
+			else {
+<span class="nc" id="L283">				controller.textAreaConsole.appendText(&quot;Missing some date entry in the data file within this date range. \n&quot;);</span>
+<span class="nc" id="L284">				continue;</span>
+			}
+<span class="nc bnc" id="L286" title="All 4 branches missed.">			if ((!dateOfRec.isAfter(endDate)) &amp;&amp; (!dateOfRec.isBefore(startDate))) {</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">				if (rec.get(&quot;location&quot;).equals(location)) {</span>
+<span class="nc" id="L288">					String p = rec.get(&quot;new_deaths_per_million&quot;);</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">					if (!p.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L290">						confirmedDeaths1M += Float.parseFloat(p);</span>
+<span class="nc" id="L291">						series.getData().add(new XYChart.Data&lt;Number, Number&gt;(dateOfRec.toEpochDay(), confirmedDeaths1M));</span>
+					}
+					else {
+<span class="nc" id="L294">						controller.textAreaConsole.appendText(&quot;Missing the new death counts per million of &quot; + location + &quot; in the data file on Date: &quot; + dateOfRec + &quot;. \n&quot;);</span>
+					}
+				}
+			}
+<span class="nc" id="L298">		}</span>
+<span class="nc" id="L299">    	return series;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

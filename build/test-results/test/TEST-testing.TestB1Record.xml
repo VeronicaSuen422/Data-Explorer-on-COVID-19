@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="testing.TestB1Record" tests="6" skipped="0" failures="0" errors="0" timestamp="2021-11-27T06:50:49" hostname="MacBook.local" time="0.016">
+  <properties/>
+  <testcase name="testGetFully" classname="testing.TestB1Record" time="0.002"/>
+  <testcase name="testSetCountry" classname="testing.TestB1Record" time="0.001"/>
+  <testcase name="testGetFully1M" classname="testing.TestB1Record" time="0.0"/>
+  <testcase name="testGetCountry" classname="testing.TestB1Record" time="0.001"/>
+  <testcase name="testSetFully1M" classname="testing.TestB1Record" time="0.0"/>
+  <testcase name="testSetFully" classname="testing.TestB1Record" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

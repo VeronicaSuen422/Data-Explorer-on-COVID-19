@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TaskA1.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">TaskA1.java</span></div><h1>TaskA1.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+import org.apache.commons.csv.CSVRecord;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.StackedBarChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CustomMenuItem;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+
+<span class="nc" id="L28">public class TaskA1 {</span>
+	private static Controller controller;
+	/**
+	 * This method sets the controller of TaskA1 to the central controller.
+	 * @param c
+	 */
+	public void setController(Controller c) {
+<span class="nc" id="L35">		controller = c;</span>
+<span class="nc" id="L36">	}</span>
+	
+	/**
+	 * The Date of Interest to retrieve data from.
+	 */
+	private LocalDate dateOfInterest;
+	/**
+	 * The available countries with records on the selected date.
+	 */
+<span class="nc" id="L45">	private ArrayList&lt;String&gt; countries = new ArrayList&lt;String&gt;();</span>
+	/**
+	 * The countries selected by the user.
+	 */
+<span class="nc" id="L49">	private ArrayList&lt;String&gt; selectedCountries = new ArrayList&lt;String&gt;();</span>
+	/**
+	 * The table to be generated for Task A1.
+	 */
+	private TableView&lt;RecordA&gt; table;
+	/**
+	 * The dropdown list to select countries.
+	 */
+	private ArrayList&lt;CustomMenuItem&gt; menuItems;
+	/**
+	 * The bar chart to be generated for the extra feature.
+	 */
+	private StackedBarChart barChart;
+	/**
+	 * The date picker to pick the Date of Interest.
+	 */
+<span class="nc" id="L65">	@FXML</span>
+	private DatePicker datePicker = new DatePicker();	
+	/**
+	 * The &quot;Create Table&quot; button.
+	 */
+	@FXML
+	private Button generateBtn;
+	/**
+	 * The dropdown menu to select countries.
+	 */
+	@FXML
+	private MenuButton menuBtn;
+	/**
+	 * The &quot;Create Bar Chart&quot; button.
+	 */
+	@FXML
+	private Button generateBtnBar;
+	
+	/**
+	 * This method sets the Date of Interest with the date picker.
+	 * @param event This is the event triggered by using the date picker.
+	 */
+	@FXML
+	void setDate(ActionEvent event) {
+<span class="nc" id="L89">    	dateOfInterest = datePicker.getValue();</span>
+<span class="nc" id="L90">    	createCountriesMenu();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    	if(countries.isEmpty()) {</span>
+<span class="nc" id="L92">    		Alert missingCountryDataAlert = new Alert(Alert.AlertType.WARNING, &quot;No country data is available for the chosen date. Please pick another date.&quot;);</span>
+<span class="nc" id="L93">    		missingCountryDataAlert.showAndWait();</span>
+    	}
+<span class="nc" id="L95">	}</span>
+	
+	/**
+	 * This method is triggered by the &quot;Create Table&quot; button and creates the table.
+	 * @param event This is the event triggered by the &quot;Create Table&quot; button.
+	 */
+	@FXML
+	void createTable(ActionEvent event) {
+<span class="nc" id="L103">		table = new TableView&lt;RecordA&gt;();</span>
+<span class="nc" id="L104">		table.getItems().clear();</span>
+<span class="nc" id="L105">		TableColumn&lt;RecordA, String&gt; countryCol = new TableColumn&lt;&gt;(&quot;Country&quot;);</span>
+<span class="nc" id="L106">		countryCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;country&quot;));</span>
+<span class="nc" id="L107">    	TableColumn&lt;RecordA, String&gt; casesTCol = new TableColumn&lt;&gt;(&quot;Total Cases&quot;);</span>
+<span class="nc" id="L108">    	casesTCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;casesTotal&quot;));</span>
+<span class="nc" id="L109">    	TableColumn&lt;RecordA, String&gt; casesPCol = new TableColumn&lt;&gt;(&quot;Total Cases (per 1M)&quot;);</span>
+<span class="nc" id="L110">    	casesPCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;casesPerM&quot;));</span>
+<span class="nc" id="L111">    	TableColumn title = new TableColumn&lt;&gt;();</span>
+<span class="nc" id="L112">    	title.getColumns().addAll(countryCol, casesTCol, casesPCol);</span>
+<span class="nc" id="L113">    	table.getColumns().add(title);</span>
+<span class="nc" id="L114">    	table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">    	if(dateOfInterest == null) {</span>
+<span class="nc" id="L116">    		Alert missingDateAlert = new Alert(Alert.AlertType.ERROR, &quot;No date selected. Please pick a date.&quot;);</span>
+<span class="nc" id="L117">    		missingDateAlert.showAndWait();</span>
+<span class="nc" id="L118">    		return;</span>
+    	}
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    	if(selectedCountries.isEmpty()) {</span>
+<span class="nc" id="L121">    		Alert missingCountriesAlert = new Alert(Alert.AlertType.ERROR, &quot;No countries selected. Please select countries to query.&quot;);</span>
+<span class="nc" id="L122">    		missingCountriesAlert.showAndWait();</span>
+<span class="nc" id="L123">    		return;</span>
+    	}
+    	
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (var country: selectedCountries) {</span>
+<span class="nc" id="L127">        	RecordA a = createRecordA(country);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        	if(a.getCasesTotal() != -1) {</span>
+<span class="nc" id="L129">        		table.getItems().add(a);</span>
+        	}
+<span class="nc" id="L131">        }</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if(table.getItems().isEmpty()) {</span>
+<span class="nc" id="L133">        	Alert missingAllDataTAlert = new Alert(Alert.AlertType.ERROR, &quot;No data is available for all the selected countries. Please select other countries to query.&quot;);</span>
+<span class="nc" id="L134">			missingAllDataTAlert.showAndWait();</span>
+<span class="nc" id="L135">			return;</span>
+        }
+<span class="nc" id="L137">        DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern(&quot;MMM d, yyyy&quot;);</span>
+<span class="nc" id="L138">        table.getColumns().get(0).setText(&quot;Number of Confirmed COVID-19 Cases as of &quot;+dateOfInterest.format(outFormatter));</span>
+<span class="nc" id="L139">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L140">        controller.scrollPaneBottom.setContent(table);</span>
+<span class="nc" id="L141">	}</span>
+	
+	/**
+	 * This method is triggered by the &quot;Create Bar Chart&quot; button and creates the bar chart for the extra feature.
+	 * @param event This is the event triggered by the &quot;Create Bar Chart&quot; button.
+	 */
+	@FXML
+	void createBarChartT(ActionEvent event) {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">		if(dateOfInterest == null) {</span>
+<span class="nc" id="L150">    		Alert missingDateAlert = new Alert(Alert.AlertType.ERROR, &quot;No date selected. Please pick a date.&quot;);</span>
+<span class="nc" id="L151">    		missingDateAlert.showAndWait();</span>
+<span class="nc" id="L152">    		return;</span>
+    	}
+<span class="nc bnc" id="L154" title="All 2 branches missed.">    	if(selectedCountries.isEmpty()) {</span>
+<span class="nc" id="L155">    		Alert missingCountriesAlert = new Alert(Alert.AlertType.ERROR, &quot;No countries selected. Please select countries to query.&quot;);</span>
+<span class="nc" id="L156">    		missingCountriesAlert.showAndWait();</span>
+<span class="nc" id="L157">    		return;</span>
+    	}
+<span class="nc" id="L159">		CategoryAxis xAxis = new CategoryAxis(); </span>
+<span class="nc" id="L160">		xAxis.setLabel(&quot;Countries&quot;);</span>
+<span class="nc" id="L161">		NumberAxis yAxis = new NumberAxis(); </span>
+<span class="nc" id="L162">		yAxis.setLabel(&quot;Number of Total Cases&quot;);</span>
+<span class="nc" id="L163">		barChart = new StackedBarChart(xAxis, yAxis);</span>
+<span class="nc" id="L164">		barChart.setLegendVisible(false);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">		for (var country: selectedCountries) {</span>
+<span class="nc" id="L166">        	var series = createSeriesT(country);</span>
+<span class="nc" id="L167">        	series.setName(country);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        	if(!series.getData().isEmpty()) { </span>
+<span class="nc" id="L169">        		barChart.getData().add(series);</span>
+        	} 
+<span class="nc" id="L171">        }</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">		if(barChart.getData().isEmpty()) {</span>
+<span class="nc" id="L173">			Alert missingAllDataAlert = new Alert(Alert.AlertType.ERROR, &quot;No data is available for all the selected countries. Please select other countries to query.&quot;);</span>
+<span class="nc" id="L174">			missingAllDataAlert.showAndWait();</span>
+<span class="nc" id="L175">			return;</span>
+		}
+<span class="nc" id="L177">		DateTimeFormatter outFormatter = DateTimeFormatter.ofPattern(&quot;MMM d, yyyy&quot;);</span>
+<span class="nc" id="L178">        barChart.setTitle(&quot;Number of Confirmed COVID-19 Cases as of &quot;+dateOfInterest.format(outFormatter));</span>
+<span class="nc" id="L179">		controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L180">		controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L181">        controller.scrollPaneBottom.setContent(barChart);</span>
+<span class="nc" id="L182">	}</span>
+	
+	
+	/**
+	 * This method creates the list of countries to be selected from in the dropdown menu.
+	 */
+	 private void createCountriesMenu() {
+<span class="nc" id="L189">    	menuBtn.getItems().clear();</span>
+<span class="nc" id="L190">    	countries = DataAnalysis.getListOfLocationsGivenDate(controller.textfieldDataset.getText(), dateOfInterest);</span>
+<span class="nc" id="L191">    	menuItems = new ArrayList&lt;CustomMenuItem&gt;();</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">    	for (var country: countries) {</span>
+<span class="nc" id="L193">    		var checkBox = new CheckBox(country);</span>
+<span class="nc" id="L194">    		var menuItem = new CustomMenuItem(checkBox);</span>
+<span class="nc" id="L195">    		menuItem.setHideOnClick(false);</span>
+<span class="nc" id="L196">    		menuItem.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+    		    public void handle(ActionEvent t) {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">    		    	if (checkBox.isSelected()) {</span>
+<span class="nc" id="L199">    		    		checkBox.setSelected(false);</span>
+<span class="nc" id="L200">    		    		selectedCountries.remove(country);</span>
+<span class="nc" id="L201">    		    		selectedCountries.remove(country);</span>
+    		    	}
+    		    	else {
+<span class="nc" id="L204">    		    		checkBox.setSelected(true);</span>
+<span class="nc" id="L205">    		    		selectedCountries.add(country);</span>
+    		    	}
+<span class="nc" id="L207">    		    }</span>
+    		});
+<span class="nc" id="L209">    		menuItems.add(menuItem);</span>
+<span class="nc" id="L210">    	}</span>
+<span class="nc" id="L211">    	menuBtn.getItems().addAll(menuItems.toArray(new CustomMenuItem[0]));</span>
+<span class="nc" id="L212">    }</span>
+	 
+	 /**
+	  * This method creates a {@link comp3111.covid.RecordA} with data for the input country, for the table.
+	  * @param country The country to retrieve data for on the selected date.
+	  * @return a {@link comp3111.covid.RecordA} containing the country, total number of cases, and number of cases per million.
+	  */
+	 public RecordA createRecordA(String country) {	
+<span class="nc" id="L220">		 	long casesTotal = -1;</span>
+<span class="nc" id="L221">		 	float casesPerM = -1;</span>
+		 	
+<span class="nc bnc" id="L223" title="All 2 branches missed.">			for (CSVRecord rec : DataAnalysis.getFileParser(controller.textfieldDataset.getText())) {</span>
+<span class="nc" id="L224">				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L225">				LocalDate recDate = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L226" title="All 4 branches missed.">				if ((recDate.equals(dateOfInterest)) &amp;&amp; (rec.get(&quot;location&quot;).equals(country))) {</span>
+<span class="nc" id="L227">						String total = rec.get(&quot;total_cases&quot;);</span>
+<span class="nc" id="L228">						String per = rec.get(&quot;total_cases_per_million&quot;);</span>
+<span class="nc bnc" id="L229" title="All 4 branches missed.">						if (!total.equals(&quot;&quot;) &amp;&amp; !per.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L230">							casesTotal = Long.parseLong(total);</span>
+<span class="nc" id="L231">							casesPerM = Float.parseFloat(per);</span>
+						} else {
+<span class="nc" id="L233">							Alert missingCasesAlert = new Alert(Alert.AlertType.WARNING, &quot;No data is available for the number of total cases for &quot;+country+&quot; on the selected date. It will be excluded from the table.&quot;);</span>
+<span class="nc" id="L234">							missingCasesAlert.showAndWait();</span>
+						} 
+						
+						
+				}
+				
+<span class="nc" id="L240">			}</span>
+<span class="nc" id="L241">			return new RecordA(country, casesTotal, casesPerM);</span>
+	 }
+	 
+	 /**
+	  * This method creates a XYChart.Series with data for the input country, for the bar chart.
+	  * @param country The country to retrieve data for on the selected date.
+	  * @return A XYChart.Series containing the country and total number of cases.
+	  */
+	 public XYChart.Series createSeriesT(String country) {
+<span class="nc" id="L250">		 long casesTotal = -1;</span>
+//		 float casesPerM = -1;
+<span class="nc" id="L252">		 var series = new XYChart.Series&lt;&gt;();</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">		 for (CSVRecord rec : DataAnalysis.getFileParser(controller.textfieldDataset.getText())) {</span>
+<span class="nc" id="L254">				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L255">				LocalDate recDate = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L256" title="All 4 branches missed.">				if ((recDate.equals(dateOfInterest)) &amp;&amp; (rec.get(&quot;location&quot;).equals(country))) {</span>
+<span class="nc" id="L257">						String total = rec.get(&quot;total_cases&quot;);</span>
+//						String per = rec.get(&quot;total_cases_per_million&quot;);
+<span class="nc bnc" id="L259" title="All 2 branches missed.">						if (!total.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L260">							casesTotal = Long.parseLong(total);</span>
+<span class="nc" id="L261">							series.getData().add(new XYChart.Data(country,casesTotal));</span>
+//							casesPerM = Float.parseFloat(per);
+//							series.getData().add(new XYChart.Data(&quot;Total Cases (Per 1M)&quot;, casesPerM));
+						} else {
+<span class="nc" id="L265">							Alert missingCasesAlert = new Alert(Alert.AlertType.WARNING, &quot;No data is available for the number of total cases for &quot;+country+&quot; on the selected date. It will be excluded from the chart.&quot;);</span>
+<span class="nc" id="L266">							missingCasesAlert.showAndWait();</span>
+						} 
+				}
+<span class="nc" id="L269">		 }</span>
+<span class="nc" id="L270">		 return series;</span>
+	 }
+	 
+	 
+	 
+	
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

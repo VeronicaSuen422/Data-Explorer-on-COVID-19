@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="testing.TestDataAnalysis" tests="6" skipped="0" failures="0" errors="0" timestamp="2021-11-27T06:50:49" hostname="MacBook.local" time="2.32">
+  <properties/>
+  <testcase name="testtoDate" classname="testing.TestDataAnalysis" time="0.017"/>
+  <testcase name="testgetVaccinationAvailableCountry" classname="testing.TestDataAnalysis" time="0.12"/>
+  <testcase name="testGetListOfLocations" classname="testing.TestDataAnalysis" time="0.974"/>
+  <testcase name="testgetVaccinationDataBetweenDate" classname="testing.TestDataAnalysis" time="0.165"/>
+  <testcase name="testgetVaccinationDateBeforeDate" classname="testing.TestDataAnalysis" time="0.008"/>
+  <testcase name="testGetListOfLocationsGivenDate" classname="testing.TestDataAnalysis" time="1.033"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

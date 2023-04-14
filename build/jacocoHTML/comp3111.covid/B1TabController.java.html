@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>B1TabController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">deCOVID</a> &gt; <a href="index.source.html" class="el_package">comp3111.covid</a> &gt; <span class="el_source">B1TabController.java</span></div><h1>B1TabController.java</h1><pre class="source lang-java linenums">package comp3111.covid;
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.CustomMenuItem;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import org.apache.commons.csv.CSVRecord;
+
+<span class="nc" id="L24">public class B1TabController {</span>
+    private Controller controller;
+	
+    private LocalDate dateOfInterest;
+    private ArrayList&lt;String&gt; countriesList;
+<span class="nc" id="L29">    private ArrayList&lt;String&gt; selectedCountriesList = new ArrayList&lt;String&gt;();</span>
+    private ArrayList&lt;CustomMenuItem&gt; menuItemList;
+    
+    @FXML
+    private Button B1GenerateButton;
+    
+    @FXML
+    private Button B1ApplyCSVButton;
+    
+    @FXML
+    private Button B1ButtonConsoleView;
+    
+    @FXML
+    private Button B1ButtonTableView;
+    
+    @FXML
+    private MenuButton B1MenuButton;
+    
+    @FXML
+    private DatePicker B1DatePicker;
+    
+    @FXML
+    private Button B1ShowTop3;
+    
+    @FXML
+    private Button B1ShowTop3_1M;
+    
+    
+<span class="nc" id="L57">    private TableView&lt;B1Record&gt; B1TableView = new TableView&lt;B1Record&gt;();</span>
+
+    /**
+     * 
+     * @param event
+     */
+    @FXML
+    void doGenerateTable(ActionEvent event) {
+<span class="nc" id="L65">    	B1TableView.getItems().clear();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    	if (selectedCountriesList.size() == 0) {</span>
+<span class="nc" id="L67">    		controller.textAreaConsole.appendText(&quot;Please Select Countries of Interest. \n&quot;);</span>
+<span class="nc" id="L68">    		return;</span>
+    	}
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    	if (this.dateOfInterest == null) {</span>
+<span class="nc" id="L71">    		controller.textAreaConsole.appendText(&quot;Please Enter Date of Interest. \n&quot;);</span>
+<span class="nc" id="L72">    		return;</span>
+    	}
+    	
+<span class="nc" id="L75">    	controller.textAreaConsole.appendText(&quot;Querying Data for the following countries: &quot;);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">    	for(String a : selectedCountriesList){</span>
+<span class="nc" id="L77">    		controller.textAreaConsole.appendText(a + &quot; &quot;);</span>
+<span class="nc" id="L78">    	}</span>
+    	
+<span class="nc" id="L80">    	controller.textAreaConsole.appendText(&quot;\n&quot;);</span>
+    	
+    	
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (String location: selectedCountriesList) {</span>
+<span class="nc" id="L84">        	B1Record record = generateB1Record(controller.textfieldDataset.getText(), location, this.dateOfInterest);</span>
+<span class="nc" id="L85">        	B1TableView.getItems().add(record);</span>
+<span class="nc" id="L86">        }</span>
+        
+<span class="nc" id="L88">        controller.scrollPaneBottom.setContent(B1TableView);</span>
+<span class="nc" id="L89">        controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L90">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L91">    }</span>
+    
+    @FXML
+    public void initialize() {
+<span class="nc" id="L95">    	TableColumn&lt;B1Record, String&gt; countryColumn = new TableColumn&lt;&gt;(&quot;Country&quot;);</span>
+<span class="nc" id="L96">    	countryColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;country&quot;));</span>
+<span class="nc" id="L97">    	TableColumn&lt;B1Record, String&gt; totalDeathColumn = new TableColumn&lt;&gt;(&quot;Total Deaths&quot;);</span>
+<span class="nc" id="L98">    	totalDeathColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;fully&quot;));</span>
+<span class="nc" id="L99">    	TableColumn&lt;B1Record, String&gt; totalDeathPer1MColumn = new TableColumn&lt;&gt;(&quot;Total Deaths (per 1M)&quot;);</span>
+<span class="nc" id="L100">    	totalDeathPer1MColumn.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;fully1M&quot;));</span>
+<span class="nc" id="L101">    	TableColumn title = new TableColumn(&quot;Country&quot;);</span>
+<span class="nc" id="L102">    	title.getColumns().addAll(countryColumn, totalDeathColumn, totalDeathPer1MColumn);</span>
+<span class="nc" id="L103">    	B1TableView.getColumns().clear();</span>
+<span class="nc" id="L104">    	B1TableView.getColumns().add(title);</span>
+<span class="nc" id="L105">    	B1TableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</span>
+<span class="nc" id="L106">    	B1DatePicker.getEditor().setDisable(true);</span>
+<span class="nc" id="L107">    }</span>
+    
+//    @FXML
+//    void doQueryCountries(ActionEvent event) {
+//    	
+//    }
+    
+    @FXML
+    void doSwitchToConsole(ActionEvent event) {
+<span class="nc" id="L116">    	controller.scrollPaneBottom.setContent(controller.textAreaConsole);</span>
+<span class="nc" id="L117">    }</span>
+    
+    @FXML
+    void doSwitchToTable(ActionEvent event) {
+<span class="nc" id="L121">    	controller.scrollPaneBottom.setContent(this.B1TableView);</span>
+<span class="nc" id="L122">    }</span>
+    
+    @FXML
+    void doPickDate(ActionEvent event) {
+<span class="nc" id="L126">    	this.dateOfInterest = B1DatePicker.getValue();</span>
+<span class="nc" id="L127">    	this.B1TableView.getColumns().get(0).setText(&quot;Number of confirmed COVID-19 Deaths as of &quot; + this.dateOfInterest);</span>
+<span class="nc" id="L128">    	updateList(this.dateOfInterest);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    	if (countriesList.size() == 0) {</span>
+<span class="nc" id="L130">    		controller.textAreaConsole.appendText(&quot;No Record on such date, please pick another date. \n&quot;);</span>
+    	}
+    	else {
+<span class="nc" id="L133">    		controller.textAreaConsole.appendText(&quot;Please pick the targeted countries from the list, or click \&quot;Show Top 3 Entries\&quot; button \n&quot;);</span>
+    	}
+<span class="nc" id="L135">    }</span>
+    
+    @FXML
+    void doShowTop3(ActionEvent event) {
+<span class="nc" id="L139">    	B1TableView.getItems().clear();</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    	if (this.dateOfInterest == null) {</span>
+<span class="nc" id="L141">    		controller.textAreaConsole.appendText(&quot;Please Enter Date of Interest. \n&quot;);</span>
+<span class="nc" id="L142">    		return;</span>
+    	}
+<span class="nc" id="L144">    	controller.textAreaConsole.appendText(&quot;Finding the top3 entries with Total Deaths on: &quot; + this.dateOfInterest + &quot;.\n&quot;);</span>
+<span class="nc" id="L145">    	ArrayList&lt;B1Record&gt; list = generateB1RecordWithTop3(this.controller.textfieldDataset.getText(), this.dateOfInterest);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    	for (B1Record rec: list) {</span>
+<span class="nc" id="L147">        	B1TableView.getItems().add(rec);</span>
+<span class="nc" id="L148">        }</span>
+        
+<span class="nc" id="L150">        controller.scrollPaneBottom.setContent(B1TableView);</span>
+<span class="nc" id="L151">        controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L152">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L153">    }</span>
+    
+    @FXML
+    void doShowTop3_1M(ActionEvent event) {
+<span class="nc" id="L157">    	B1TableView.getItems().clear();</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">    	if (this.dateOfInterest == null) {</span>
+<span class="nc" id="L159">    		controller.textAreaConsole.appendText(&quot;Please Enter Date of Interest. \n&quot;);</span>
+<span class="nc" id="L160">    		return;</span>
+    	}
+<span class="nc" id="L162">    	controller.textAreaConsole.appendText(&quot;Finding the top3 entries with Total Deaths Per 1 Million on: &quot; + this.dateOfInterest + &quot;.\n&quot;);</span>
+<span class="nc" id="L163">    	ArrayList&lt;B1Record&gt; list = generateB1RecordWithTop3_1M(this.controller.textfieldDataset.getText(), this.dateOfInterest);</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">    	for (B1Record rec: list) {</span>
+<span class="nc" id="L165">        	B1TableView.getItems().add(rec);</span>
+<span class="nc" id="L166">        }</span>
+        
+<span class="nc" id="L168">        controller.scrollPaneBottom.setContent(B1TableView);</span>
+<span class="nc" id="L169">        controller.scrollPaneBottom.setFitToHeight(true);</span>
+<span class="nc" id="L170">        controller.scrollPaneBottom.setFitToWidth(true);</span>
+<span class="nc" id="L171">    }</span>
+    
+    //updateList: after the user select the Date, add suitable items into the menu
+    private void updateList(LocalDate dateOfInterest) {
+<span class="nc" id="L175">    	selectedCountriesList.clear();</span>
+<span class="nc" id="L176">    	B1MenuButton.getItems().clear();</span>
+<span class="nc" id="L177">    	this.countriesList = DataAnalysis.getListOfLocationsGivenDate(controller.textfieldDataset.getText(), dateOfInterest);</span>
+<span class="nc" id="L178">    	this.menuItemList = new ArrayList&lt;CustomMenuItem&gt;();</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    	for (String country: this.countriesList) {</span>
+<span class="nc" id="L180">    		CheckBox checkBox = new CheckBox(country);</span>
+<span class="nc" id="L181">    		CustomMenuItem menuItem = new CustomMenuItem(checkBox);</span>
+<span class="nc" id="L182">    		menuItem.setHideOnClick(false);</span>
+<span class="nc" id="L183">    		menuItem.setOnAction(new EventHandler&lt;ActionEvent&gt;() {</span>
+    		    public void handle(ActionEvent t) {
+<span class="nc bnc" id="L185" title="All 2 branches missed.">    		    	if (checkBox.isSelected()) {</span>
+<span class="nc" id="L186">    		    		checkBox.setSelected(false);</span>
+<span class="nc" id="L187">    		    		selectedCountriesList.remove(country);</span>
+<span class="nc" id="L188">    		    		selectedCountriesList.remove(country);</span>
+    		    	}
+    		    	else {
+<span class="nc" id="L191">    		    		checkBox.setSelected(true);</span>
+<span class="nc" id="L192">    		    		selectedCountriesList.add(country);</span>
+    		    	}
+<span class="nc" id="L194">    		    }</span>
+    		});
+<span class="nc" id="L196">    		this.menuItemList.add(menuItem);</span>
+<span class="nc" id="L197">    	}</span>
+<span class="nc" id="L198">    	B1MenuButton.getItems().addAll(this.menuItemList.toArray(new CustomMenuItem[0]));</span>
+<span class="nc" id="L199">    }</span>
+    
+    public void injectController(Controller controller) {
+<span class="nc" id="L202">    	this.controller = controller;</span>
+<span class="nc" id="L203">    }</span>
+    
+    public B1Record generateB1Record(String dataset, String location, LocalDate dateOfInterest) {	
+<span class="nc" id="L206">		long confirmedDeaths = -1;</span>
+<span class="nc" id="L207">		float confirmedDeaths1M = -1;</span>
+		
+<span class="nc bnc" id="L209" title="All 2 branches missed.">		for (CSVRecord rec : DataAnalysis.getFileParser(dataset)) {</span>
+<span class="nc" id="L210">			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L211">			LocalDate dateOfRec = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">			if (dateOfRec.equals(dateOfInterest)) {</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">				if (rec.get(&quot;location&quot;).equals(location)) {</span>
+					
+<span class="nc" id="L215">					String s = rec.get(&quot;total_deaths&quot;);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">					if (!s.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L217">						System.out.println(&quot;In s&quot; + Long.parseLong(s));</span>
+<span class="nc" id="L218">						confirmedDeaths = Long.parseLong(s);</span>
+					}
+					else {
+<span class="nc" id="L221">						controller.textAreaConsole.appendText</span>
+<span class="nc" id="L222">						(&quot;Missing the total_deaths counts of &quot; + location + &quot; in the data file. \n&quot;);</span>
+					}
+<span class="nc" id="L224">					String p = rec.get(&quot;total_deaths_per_million&quot;);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">					if (!p.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L226">						confirmedDeaths1M = Float.parseFloat(p);</span>
+					}
+					else {
+<span class="nc" id="L229">						controller.textAreaConsole.appendText</span>
+<span class="nc" id="L230">						(&quot;Missing the total_deaths counts per million of &quot; + location + &quot; in the data file. \n&quot;);</span>
+					}
+				}
+			}
+<span class="nc" id="L234">		}</span>
+<span class="nc" id="L235">		return new B1Record(location, confirmedDeaths, confirmedDeaths1M);</span>
+    }
+    
+    public ArrayList&lt;B1Record&gt; generateB1RecordWithTop3(String dataset, LocalDate dateOfInterest) {	
+<span class="nc" id="L239">		List&lt;B1Record&gt; list = new ArrayList&lt;B1Record&gt;();</span>
+<span class="nc" id="L240">		long confirmedDeaths = -1;</span>
+<span class="nc" id="L241">		float confirmedDeaths1M = -1;</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">		for (CSVRecord rec : DataAnalysis.getFileParser(dataset)) {</span>
+<span class="nc" id="L243">			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L244">			LocalDate dateOfRec = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">			if (dateOfRec.equals(dateOfInterest)) {</span>
+<span class="nc" id="L246">				String location = rec.get(&quot;location&quot;);</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">				if (!location.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L248">					String s = rec.get(&quot;total_deaths&quot;);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">					if (!s.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L250">						confirmedDeaths = Long.parseLong(s);</span>
+					}
+					else {
+						continue;
+					}
+<span class="nc" id="L255">					String p = rec.get(&quot;total_deaths_per_million&quot;);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">					if (!p.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L257">						confirmedDeaths1M = Float.parseFloat(p);</span>
+					}
+					else {
+						continue;
+					}
+				}
+<span class="nc" id="L263">				list.add(new B1Record(location, confirmedDeaths, confirmedDeaths1M));</span>
+			}
+<span class="nc" id="L265">		}</span>
+<span class="nc" id="L266">		Collections.sort(list, new Comparator&lt;B1Record&gt;() {</span>
+	        @Override
+	        public int compare(B1Record h1, B1Record h2) {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">	        	if(h1.getFully() &gt; h2.getFully()) {</span>
+<span class="nc" id="L270">	                return 1;</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">	             } else if(h1.getFully() &lt; h2.getFully()) {</span>
+<span class="nc" id="L272">	                return -1;</span>
+	             } else {
+<span class="nc" id="L274">	                return 0;</span>
+	             }
+	        }
+	    });
+<span class="nc" id="L278">		int n = 3;</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">		if(list.size() &lt; n) {</span>
+<span class="nc" id="L280">			n = list.size();</span>
+		}
+<span class="nc" id="L282">		return new ArrayList&lt;B1Record&gt;(list.subList(list.size()-n, list.size()));</span>
+    }
+    
+    public ArrayList&lt;B1Record&gt; generateB1RecordWithTop3_1M(String dataset, LocalDate dateOfInterest) {	
+<span class="nc" id="L286">		List&lt;B1Record&gt; list = new ArrayList&lt;B1Record&gt;();</span>
+<span class="nc" id="L287">		long confirmedDeaths = -1;</span>
+<span class="nc" id="L288">		float confirmedDeaths1M = -1;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">		for (CSVRecord rec : DataAnalysis.getFileParser(dataset)) {</span>
+<span class="nc" id="L290">			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;M/d/yyyy&quot;);</span>
+<span class="nc" id="L291">			LocalDate dateOfRec = LocalDate.parse(rec.get(&quot;date&quot;), formatter);</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">			if (dateOfRec.equals(dateOfInterest)) {</span>
+<span class="nc" id="L293">				String location = rec.get(&quot;location&quot;);</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">				if (!location.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L295">					String s = rec.get(&quot;total_deaths&quot;);</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">					if (!s.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L297">						confirmedDeaths = Long.parseLong(s);</span>
+					}
+					else {
+						continue;
+					}
+<span class="nc" id="L302">					String p = rec.get(&quot;total_deaths_per_million&quot;);</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">					if (!p.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L304">						confirmedDeaths1M = Float.parseFloat(p);</span>
+					}
+					else {
+						continue;
+					}
+				}
+<span class="nc" id="L310">				list.add(new B1Record(location, confirmedDeaths, confirmedDeaths1M));</span>
+			}
+<span class="nc" id="L312">		}</span>
+<span class="nc" id="L313">		Collections.sort(list, new Comparator&lt;B1Record&gt;() {</span>
+	        @Override
+	        public int compare(B1Record h1, B1Record h2) {
+<span class="nc bnc" id="L316" title="All 2 branches missed.">	        	if(h1.getFully1M() &gt; h2.getFully1M()) {</span>
+<span class="nc" id="L317">	                return 1;</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">	             } else if(h1.getFully1M() &lt; h2.getFully1M()) {</span>
+<span class="nc" id="L319">	                return -1;</span>
+	             } else {
+<span class="nc" id="L321">	                return 0;</span>
+	             }
+	        }
+	    });
+<span class="nc" id="L325">		int n = 3;</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">		if(list.size() &lt; n) {</span>
+<span class="nc" id="L327">			n = list.size();</span>
+		}
+<span class="nc" id="L329">		return new ArrayList&lt;B1Record&gt;(list.subList(list.size()-n, list.size()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
