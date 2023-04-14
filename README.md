@@ -1,21 +1,3 @@
-# Comp3111 Fall 2021 T-41
-
-https://github.com/choiivan13/Comp3111T-41.git
-
-## Group Info (T-41)
-
-1. Lau Tsz Ching Rachel  
-   Email: tcrlau@connect.ust.hk | Github: tcrl | Dev Branch: rachel_dev  
-   Task: A1 & A2
-   
-2. Choi Wing Ming  
-   Email: wmchoiaa@connect.ust.hk | GitHub: choiivan13 | Dev Branch: choiivan13_dev  
-   Task: B1 & B2
-
-3. Suen Pui Ka  
-   Email: pksuen@connect.ust.hk | Github: VeronicaSuen422 | Dev Branch: veronica_dev    
-   Task: C1 & C2
-
 ## Tasks Details
 Screenshots and descriptions of the execution of the application showing sample inputs and outputs for each individual set of tasks have been included in the linked documents below.
 1. [Task A](../master/taskA.md)
@@ -43,11 +25,6 @@ Our code has also been well documented with Javadoc. You may find the Javadoc so
 <br>[javadoc-myapplication.pdf](https://github.com/choiivan13/Comp3111T-41/files/7612971/javadoc-myapplication.pdf)
 <br>[javadoc-taska1.pdf](https://github.com/choiivan13/Comp3111T-41/files/7612972/javadoc-taska1.pdf)
 <br>[javadoc-taska2.pdf](https://github.com/choiivan13/Comp3111T-41/files/7612973/javadoc-taska2.pdf)
-
-## Other files
-Activity 1: System Requirements Specification [[COMP3111T41 Activity 1.pdf](https://github.com/choiivan13/Comp3111T-41/files/7590505/COMP3111T41.Activity.1.pdf)]
-<br>Activity 2: Documentation [[COMP3111T41_Activity2_Documentation.pdf](https://github.com/choiivan13/Comp3111T-41/files/7612266/COMP3111T41_Activity2_Documentation.pdf)]
-<br>These files have also been handed in to Canvas.
 
 
 
